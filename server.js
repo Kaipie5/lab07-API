@@ -7,13 +7,17 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
+// allows us to get real data
+const superagent = require('superagent');
+
 const PORT = process.env.PORT;
+
+let currentLat = 0;
+let currentLng = 0;
 
 app.get('/', (request, response) => {
     console.log("HELLLOOOOOOOO")
     response.send("Hello from the back side");
-    // let city = request.query.data;
-
     // console.log(city);
     // let locationObj = searchLatToLong(city);
     // responseObj = {
@@ -22,94 +26,89 @@ app.get('/', (request, response) => {
     //     "latitude": locationObj.latitude,
     //     "longitude": locationObj.longitude
     // }
-    // console.log(responseObj);
-
-    // response.send(responseObj);
 })
+
+
 
 app.get('/location', (request, response) => {
     console.log(" ALSO HELLOOOOOO")
-    let city = request.query.data;
 
-    console.log(city);
-    let responseObject = createResponseObjLocation(city);
-    
-    console.log(responseObject);
-    if (responseObject.status === errorResponse().status) {
-        response.status(500).send(responseObject)
-    } else {
-        response.send(responseObject);
+    try{  
+        createResponseObjLocation(request, response);      
+    }
+    catch(error){
+        console.error(error); // will turn the error message red if the environment supports it
+
+        response.status(500).send('Sorry something went wrong');
     }
 
     
 })
 
-function createResponseObjLocation(searchQuery) {
-    const geoData = require('./data/geo.json');
-    for (let i = 0; i < geoData.results.length; i++) {
-        if (geoData.results[i].address_components[0].long_name.toLowerCase() === searchQuery.toLowerCase()) {
-            
-            let locationObj = new Location(searchQuery, geoData.results[i]);
+function createResponseObjLocation(request, response) {
+    // const geoData = require('./data/geo.json');
+    const city = request.query.data;
+    console.log(city)
 
-            return locationObj
-        }
-    }
-    console.log("FAILED TO FIND CITY")
+    let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`;
+
+  superagent.get(url)
+    .then(results => {
+        
+
+        let locationObj = new Location(city, results.body.results[0]);
+        console.log(locationObj)
+        currentLat = locationObj.latitude
+        currentLng = locationObj.longitude
+
+        console.log("RESPONSE LOCATION", locationObj);
+        response.send(locationObj);
+        
     
-    return errorResponse();
-
-    // const locationObj = {
-    //   "search_query": city,
-    //   "formatted_query": geoDataResults.formatted_address,
-    //   "latitude": geoDataResults.geometry.location.lat,
-    //   "longitude": geoDataResults.geometry.location.lng
-    // }
+    });
 }
 
 app.get('/weather', (request, response) => {
-    /*[
-  {
-    "forecast": "Partly cloudy until afternoon.",
-    "time": "Mon Jan 01 2001"
-  },
-  {
-    "forecast": "Mostly cloudy in the morning.",
-    "time": "Tue Jan 02 2001"
-  },
-  ...
-]*/
+
     console.log(" Weather HELLOOOOOO")
+    // console.log(request)
 
-    let responseObject = createResponseObjWeather();
+    try{
+        
     
-    console.log(responseObject);
+        const responseObject = createResponseObjWeather(request, response);
+    
+        
+    }
+    catch(error){
+        console.error(error); // will turn the error message red if the environment supports it
 
-    response.send(responseObject);
+        response.status(500).send('Sorry something went wrong');
+    }
     
 
 })
 
-function createResponseObjWeather() {
-    const weatherData = require('./data/darksky.json');
+function createResponseObjWeather(request, response) {
+    // const weatherData = require('./data/darksky.json');
+    console.log("LAT LNG", currentLat, currentLng)
+    let url = `https://api.darksky.net/forecast/${process.env.DARKSKY_API_KEY}/${currentLat},${currentLng}`;
+
+  superagent.get(url)
+    .then(results => {
+
+        let weatherObjList = results.body.daily.data.map( (dayForecast) => {
+            return new Weather(dayForecast)
+        });
+
+        console.log("WEATHER OBJ", weatherObjList)
 
 
-    let weatherObjList = weatherData.daily.data.map( (dayForecast) => {
-        return new Weather(dayForecast)
+        console.log("RESPONSE WEATHER", weatherObjList);
+        response.send(weatherObjList);
+        
     });
 
-    // let weatherObjList = []
-    // for (let i = 0; i < weatherData.daily.data.length; i++) {
-    //     weatherObjList.push(new Weather(weatherData.daily.data[i]));
-    // }
-    return weatherObjList
-
-}
-
-function errorResponse() {
-    return {
-        "status": 500,
-        "responseText": "Sorry something went wrong"
-    }
 }
 
 app.listen(PORT, () => {

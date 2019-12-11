@@ -64,3 +64,23 @@ Start time: 9:31am
 Finish time: 9:34
 
 Actual time needed to complete: 3 minutes
+
+Feature 5: Location API Lookup
+
+Estimate of time needed to complete: 40 minutes
+
+Start time: 9:40am
+
+Finish time: 10:54am
+
+Actual time needed to complete: 75 minutes
+
+Feature 5: Weather API Lookup
+
+Estimate of time needed to complete: 40 minutes
+
+Start time: 9:40am
+
+Finish time: 10:54am
+
+Actual time needed to complete: 75 minutes
