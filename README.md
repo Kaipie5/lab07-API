@@ -54,3 +54,13 @@ Start time: 12:30pm
 Finish time: 12:45pm
 
 Actual time needed to complete: 15 minutes
+
+Feature 4: Data Formatting
+
+Estimate of time needed to complete: 20 minutes
+
+Start time: 9:31am
+
+Finish time: 9:34
+
+Actual time needed to complete: 3 minutes

@@ -92,10 +92,15 @@ app.get('/weather', (request, response) => {
 function createResponseObjWeather() {
     const weatherData = require('./data/darksky.json');
 
-    let weatherObjList = []
-    for (let i = 0; i < weatherData.daily.data.length; i++) {
-        weatherObjList.push(new Weather(weatherData.daily.data[i]));
-    }
+
+    let weatherObjList = weatherData.daily.data.map( (dayForecast) => {
+        return new Weather(dayForecast)
+    });
+
+    // let weatherObjList = []
+    // for (let i = 0; i < weatherData.daily.data.length; i++) {
+    //     weatherObjList.push(new Weather(weatherData.daily.data[i]));
+    // }
     return weatherObjList
 
 }
