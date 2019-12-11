@@ -54,7 +54,7 @@ function createResponseObjLocation(request, response) {
 
   superagent.get(url)
     .then(results => {
-        
+        console.log(results.body.results[0])
 
         let locationObj = new Location(city, results.body.results[0]);
         console.log(locationObj)
