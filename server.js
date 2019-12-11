@@ -76,7 +76,7 @@ app.get('/weather', (request, response) => {
     try{
         
     
-        const responseObject = createResponseObjWeather(request, response);
+        createResponseObjWeather(request, response);
     
         
     }
