@@ -158,10 +158,10 @@ function createResponseObjEvent(request, response) {
             let name = event.querySelector("title").textContent;
             let summary = event.querySelector("description").textContent;
             let newEvent = new Event(link, name, event_date, summary);
-            console.log(newEvent)
+            // console.log(newEvent)
             eventsArray.push(newEvent)
         }
-        console.log(eventsArray)
+        // console.log(eventsArray)
         response.send(eventsArray);
         
     
