@@ -84,3 +84,13 @@ Start time: 9:40am
 Finish time: 10:54am
 
 Actual time needed to complete: 75 minutes
+
+Feature 6: Event Lookup
+
+Estimate of time needed to complete: 40 minutes
+
+Start time: 11:00am
+
+Finish time: 4:11pm
+
+Actual time needed to complete: 5 hours
