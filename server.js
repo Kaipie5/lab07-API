@@ -14,7 +14,6 @@ const PORT = process.env.PORT;
 
 let currentLat = 0;
 let currentLng = 0;
-let currentCity = "";
 
 app.get('/', (request, response) => {
     console.log("HELLLOOOOOOOO")
@@ -49,21 +48,20 @@ app.get('/location', (request, response) => {
 function createResponseObjLocation(request, response) {
     // const geoData = require('./data/geo.json');
     const city = request.query.data;
-    // console.log(city)
+    console.log(city)
 
     let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${city}&key=${process.env.GEOCODE_API_KEY}`;
 
   superagent.get(url)
     .then(results => {
-        // console.log(results.body.results[0])
+        console.log(results.body.results[0])
 
         let locationObj = new Location(city, results.body.results[0]);
-        // console.log(locationObj)
+        console.log(locationObj)
         currentLat = locationObj.latitude
         currentLng = locationObj.longitude
-        currentCity = city
 
-        // console.log("RESPONSE LOCATION", locationObj);
+        console.log("RESPONSE LOCATION", locationObj);
         response.send(locationObj);
         
     
@@ -103,68 +101,14 @@ function createResponseObjWeather(request, response) {
             return new Weather(dayForecast)
         });
 
-        // console.log("WEATHER OBJ", weatherObjList)
+        console.log("WEATHER OBJ", weatherObjList)
 
 
-        // console.log("RESPONSE WEATHER", weatherObjList);
+        console.log("RESPONSE WEATHER", weatherObjList);
         response.send(weatherObjList);
         
     });
 
-}
-
-app.get('/events', (request, response) => {
-    console.log("Event HELLOOOOO")
-
-    try{  
-        createResponseObjEvent(request, response);      
-    }
-    catch(error){
-        console.error(error); // will turn the error message red if the environment supports it
-
-        response.status(500).send('Sorry something went wrong');
-    }
-
-    
-})
-
-function createResponseObjEvent(request, response) {
-    // const geoData = require('./data/geo.json');
-    // const city = request.query.data;
-    // console.log(city)
-
-    let url = `http://api.eventful.com/rest/events/search?app_key=${process.env.EVENTFUL_API_KEY}&location=${currentCity}&date=Future`;
-    console.log("URL", url)
-    const jsdom = require("jsdom");
-    
-
-  superagent.get(url)
-    .then(results => {
-        // console.log(Object.keys(results));
-        const dom = new jsdom.JSDOM(results.text)
-        let eventsArray = []
-        let numEvents = 20
-        if (dom.window.document.querySelectorAll("event").length < 20) {
-            numEvents = dom.window.document.querySelectorAll("event").length
-        }
-
-        let allEvents = dom.window.document.querySelectorAll("event")
-        
-        for (let i = 0; i < numEvents; i++) {
-            let event = allEvents[i]
-            // console.log(event.querySelector('url').textContent)
-            let link = event.querySelector("url").textContent;
-            let event_date = event.querySelector("start_time").textContent;
-            let name = event.querySelector("title").textContent;
-            let summary = event.querySelector("description").textContent;
-            let newEvent = new Event(link, name, event_date, summary);
-            console.log(newEvent)
-            eventsArray.push(newEvent)
-        }
-        response.send(eventsArray);
-        
-    
-    });
 }
 
 app.listen(PORT, () => {
@@ -182,11 +126,4 @@ function Location(city, geoDataResults){
     this.forecast = darkSkyDataResults.summary;
     let date = new Date(darkSkyDataResults.time * 1000)
     this.time = date.toString();
-  }
-
-  function Event(link, name, event_date, summary) {
-      this.link = link
-      this.name = name
-      this.event_date = event_date
-      this.summary = summary
   }
