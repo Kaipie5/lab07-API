@@ -161,6 +161,7 @@ function createResponseObjEvent(request, response) {
             console.log(newEvent)
             eventsArray.push(newEvent)
         }
+        console.log(eventsArray)
         response.send(eventsArray);
         
     
